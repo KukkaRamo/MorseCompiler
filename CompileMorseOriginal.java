@@ -3,8 +3,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 /**
  * The main class takes care about the UI for now.
@@ -15,7 +13,7 @@ import java.io.InputStreamReader;
  * 
  * @author Kukka
  */
-public class CompileMorse {
+public class CompileMorseOriginal {
     
     
     /**
@@ -32,44 +30,34 @@ public class CompileMorse {
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      */
-    public static void main(String[] args) throws IllegalArgumentException, NoSuchMethodException, FileNotFoundException, 
+    public static void main2(String[] args) throws IllegalArgumentException, NoSuchMethodException, FileNotFoundException, 
             ParseException , IOException, IllegalAccessException, InvocationTargetException  {
+        
         
         IOToCompiler myController;
         
-        java.io.BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Input file: ");
-        String inputPath = inputReader.readLine();
-        System.out.println("Output file: ");
-        String outputPath = inputReader.readLine();
-        String desiredMethod = " ";
-        while ( ! (desiredMethod.equals("E") || desiredMethod.equals("M") ) ) {
-            System.out.println ("Translation direction : E = Englisn to morse, M = morse to English");
-            desiredMethod = inputReader.readLine().toUpperCase();     
-        }
-        String myMethod = (desiredMethod.equals("E") ? "EnglishToMorse" : "MorseToEnglish");
-    
-        if (args != null && args.length != 0) {
-            String errorMessage = "Usage: CompileMorse ";
+        if (args.length != 3){ // Four if there are other alphabets
+            String errorMessage = "Usage: CompileMorse infile outfile translation_method";
             System.out.println(errorMessage);
+            System.out.println("For now, the translation method must be either EnglishToMorse or MorseToEnglish.");
             throw new IllegalArgumentException (errorMessage);
         }
         
         try {
-            myController = new IOToCompilerBuilder().setMethodName(myMethod).createIOToCompiler();
+            myController = new IOToCompilerBuilder().setMethodName(args[2]).createIOToCompiler();
         }
         catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
             throw e;
         }
         catch (NoSuchMethodException e) {
-            System.out.println("Problems in finding method "+ myMethod);
+            System.out.println("Problems in finding method "+ args[2]);
             System.out.println(e.getMessage());
             throw e;
         }
         
         try {
-            myController.compileTextIO(inputPath, outputPath);
+            myController.compileTextIO(args[0], args[1]);
         } 
         catch (FileNotFoundException e) {
             System.out.println("File not found");
